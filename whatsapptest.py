@@ -4,6 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 import urllib
+import os
+
+dir_path = os.getcwd()
 
 def request_client_by_id(number):
     response = req.get(f'https://evo-integracao.w12app.com.br/api/v1/members/{number}',
@@ -16,16 +19,19 @@ def request_client_by_id(number):
     )
     return response.json()
 
-primax_clients = [['VINICIUS ABISMAEL CORREIA', 'SOARES', '(11)979608314'],
-['ANDRE', 'LUIZ LOPES PINTO', '11968585690'],
-['THIAGO', 'SALZMAN', '11995963319         '],
-['FABRICIO', 'MAGALHÃES FALCO', '(32)999172477'],
-['CLAUDIA CAROLINA', 'BAZAN DA COSTA', '11980743218']]
+primax_clients = [['Leandro', 'Cavallari', '(11)973139189']]
 
-
-browser = webdriver.Chrome()
+browser = webdriver.Chrome(executable_path="bots-python\chromedriver.exe")
 
 print(primax_clients)
+
+def enviar_midia(midia):
+    driver.find_element_by_css_selector("span[data-icon='clip']").click()
+    attach = driver.find_element_by_css_selector("input[type='file']")
+    attach.send_keys(midia)
+    time.sleep(3)
+    send = driver.find_element_by_css_selector("span[data-icon='send']")
+    send.click()  
 
 def format_clients_primax_cellphone(primax_list):
     for i in primax_list:
@@ -41,6 +47,9 @@ def format_clients_primax_cellphone(primax_list):
     return primax_list
 
 
+midia = dir_path + '/bots-python/imagem/imagem.jpeg'
+
+print(midia)
 
 new_primax_list = format_clients_primax_cellphone(primax_clients)
 
@@ -54,7 +63,7 @@ for i in new_primax_list:
 
     message = urllib.parse.quote(f'''Boa noite {firstName}!! Tudo bem? Estamos sentindo sua falta aqui na Primax Academia. Observamos que você não está frequentando a academia faz 5 dias hoje, gostaríamos de saber como você está? E mais, que você volte com a sua rotina de treino para que conquiste seus objetivos e melhore cada dia mais sua qualidade de vida.\nVenha treinar!!! Esperamos por você!!!''')
 
-    link = f'https://web.whatsapp.com/send?phone={cellphone}&text={message}'
+    link = f'https://web.whatsapp.com/send?phone={cellphone}'
 
     browser.get(link)
 
@@ -67,9 +76,20 @@ for i in new_primax_list:
             print('número de celular está inválido')
             time.sleep(40)
     except:
-        print('caiu aqui')
-        print(i)
-        browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]').send_keys(Keys.ENTER)
-        time.sleep(40)
+        try:
+            print('caiu aqui')
+            print(i)
+            browser.find_element_by_css_selector("span[data-icon='clip']").click()
+            time.sleep(5)
+            attach = browser.find_element_by_css_selector("input[type='file']")
+            
+            attach.send_keys(midia)
+            time.sleep(3)
 
-    print('veio aqui tambem')
+            send = browser.find_element_by_xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span")
+            send.click()
+            #browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]').send_keys(Keys.ENTER)
+            time.sleep(40)
+        except Exception as e:
+            print("Erro ao enviar media", e)
+
