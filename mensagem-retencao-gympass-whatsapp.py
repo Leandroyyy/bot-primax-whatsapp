@@ -2,6 +2,7 @@ import requests as req
 from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import urllib
 import time
 
 # I just can request 50 clients per request
@@ -129,7 +130,9 @@ for i in new_primax_list:
     lastName = i[1].title()
     cellphone = i[2]
  
-    link = f'https://web.whatsapp.com/send?phone={cellphone}'
+    message = urllib.parse.quote(f'''Bom dia {firstName}!! Tudo bem? Estamos sentindo sua falta aqui na Primax Academia. Observamos que você não está frequentando a academia faz 5 dias hoje, gostaríamos de saber como você está? E mais, que você volte com a sua rotina de treino para que conquiste seus objetivos e melhore cada dia mais sua qualidade de vida.\nVenha treinar!!! Esperamos por você!!!''')
+
+    link = f'https://web.whatsapp.com/send?phone={cellphone}&text={message}'
 
     browser.get(link)
 
@@ -141,21 +144,9 @@ for i in new_primax_list:
             print(f'número de celular {cellphone} está inválido, nome da pessoa: {firstName} {lastName}')
             time.sleep(40)
     except:
-        try:
-            print(i)
-            browser.find_element_by_css_selector("span[data-icon='clip']").click()
-            time.sleep(5)
-            attach = browser.find_element_by_css_selector("input[type='file']")
-            
-            attach.send_keys(midia)
-            time.sleep(3)
-
-            send = browser.find_element_by_xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span")
-            send.click()
-
-            time.sleep(40)
-        except Exception as e:
-            print("Erro ao enviar media", e)
+        print('caiu aqui')
+        browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]').send_keys(Keys.ENTER)
+        time.sleep(40)
 
 
 print('=======================================================')

@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import urllib
 import time
+import os
 
 def request_clients(take, skip):
     response = req.get(f'https://evo-integracao.w12app.com.br/api/v1/members?take={take}&skip={skip}',
@@ -74,8 +75,6 @@ while i <= all_ids:
 
     response = request_clients(50, i)
 
-# lembrar amanha quando dou getAll aparece gympassId , mas quando dou getbyid nao aparece
-
     print(i)
     try:
         for j in response:
@@ -104,3 +103,61 @@ while i <= all_ids:
         i+= 50
     except:
         print('internet caiu')    
+
+def format_clients_primax_cellphone(primax_list):
+    for i in primax_list:
+        
+        if i != []:
+            first_support  = i[2].replace('(','')
+            second_support  = first_support.replace(')', '')
+
+            i[2] = '55'+second_support
+
+    return primax_list
+
+browser = webdriver.Chrome()
+
+dir_path = os.getcwd()
+
+midia = dir_path + '/bots-python/imagem/imagem.jpeg'
+
+new_primax_list = format_clients_primax_cellphone(primax_clients)
+
+for i in new_primax_list:
+
+    firstName = i[0].title()
+    cellphone = i[2]
+
+    link = f'https://web.whatsapp.com/send?phone={cellphone}'
+
+    browser.get(link)
+
+    while len(browser.find_elements_by_id('side')) < 1:
+        time.sleep(20)
+
+    try:
+        if(browser.find_element_by_xpath('//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/div') != None):
+            print(i)
+            print('número de celular está inválido')
+            time.sleep(40)
+    except:
+        try:
+            print(i)
+            browser.find_element_by_css_selector("span[data-icon='clip']").click()
+            time.sleep(5)
+            attach = browser.find_element_by_css_selector("input[type='file']")
+            
+            attach.send_keys(midia)
+            time.sleep(3)
+
+            send = browser.find_element_by_xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span")
+            send.click()
+
+            time.sleep(40)
+        except Exception as e:
+            print("Erro ao enviar media", e)
+
+
+print('=============================================')
+print('finalizado')
+print('=============================================')
