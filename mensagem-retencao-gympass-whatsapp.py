@@ -1,3 +1,4 @@
+from types import NoneType
 import requests as req
 from datetime import datetime, timedelta
 from selenium import webdriver
@@ -120,33 +121,37 @@ def format_clients_primax_cellphone(primax_list):
 
     return primax_list
 
-browser = webdriver.Chrome()
+browser = webdriver.Chrome(executable_path="bot-primax-whatsapp\chromedriver.exe")
 
 new_primax_list = format_clients_primax_cellphone(primax_clients)
 
+print(new_primax_list)
+
 for i in new_primax_list:
 
-    firstName = i[0].title()
-    lastName = i[1].title()
-    cellphone = i[2]
- 
-    message = urllib.parse.quote(f'''Bom dia {firstName}!! Tudo bem? Estamos sentindo sua falta aqui na Primax Academia. Observamos que você não está frequentando a academia faz 5 dias hoje, gostaríamos de saber como você está? E mais, que você volte com a sua rotina de treino para que conquiste seus objetivos e melhore cada dia mais sua qualidade de vida.\nVenha treinar!!! Esperamos por você!!!''')
+    if i != []:
 
-    link = f'https://web.whatsapp.com/send?phone={cellphone}&text={message}'
+        firstName = i[0].title()
+        cellphone = i[2]
+    
+        message = urllib.parse.quote(f'''Boa noite {firstName}!! Tudo bem? Estamos sentindo sua falta aqui na Primax Academia. Observamos que você não está frequentando a academia faz 7 dias hoje, gostaríamos de saber como você está? E mais, que você volte com a sua rotina de treino para que conquiste seus objetivos e melhore cada dia mais sua qualidade de vida.\nVenha treinar!!! Esperamos por você!!!''')
 
-    browser.get(link)
+        link = f'https://web.whatsapp.com/send?phone={cellphone}&text={message}'
 
-    while len(browser.find_elements_by_id('side')) < 1:
-        time.sleep(20)
+        browser.get(link)
 
-    try:
-        if(browser.find_element_by_xpath('//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/div') != None):
-            print(f'número de celular {cellphone} está inválido, nome da pessoa: {firstName} {lastName}')
+        while len(browser.find_elements_by_id('side')) < 1:
+            time.sleep(20)
+
+        try:
+            if(browser.find_element_by_xpath('//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/div') != None):
+                print(f'número de celular {cellphone} está inválido, nome da pessoa: {firstName}')
+                time.sleep(40)
+        except:
+            send = browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span')
+            send.click()
+            print(f'imagem enviado para {cellphone} aluno: {firstName}')
             time.sleep(40)
-    except:
-        print('caiu aqui')
-        browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]').send_keys(Keys.ENTER)
-        time.sleep(40)
 
 
 print('=======================================================')

@@ -21,7 +21,7 @@ def request_client_by_id(number):
 
 primax_clients = [['Leandro', 'Cavallari', '(11)973139189']]
 
-browser = webdriver.Chrome(executable_path="bots-python\chromedriver.exe")
+browser = webdriver.Chrome(executable_path="bot-primax-whatsapp\chromedriver.exe")
 
 print(primax_clients)
 
@@ -47,7 +47,7 @@ def format_clients_primax_cellphone(primax_list):
     return primax_list
 
 
-midia = dir_path + '/bots-python/imagem/imagem.jpeg'
+midia = dir_path + '/bot-primax-whatsapp/imagem/imagem.jpeg'
 
 print(midia)
 

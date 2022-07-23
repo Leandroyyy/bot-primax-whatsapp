@@ -1,3 +1,4 @@
+from calendar import c
 import requests as req
 from datetime import datetime, timedelta
 from selenium import webdriver
@@ -56,17 +57,10 @@ def format_evo_date(lastAccessDate):
     data_evo_new = datetime.strptime(formatted_another, '%Y/%m/%d').date()
     return data_evo_new
 
-def enviar_midia(midia):
-    driver.find_element_by_css_selector("span[data-icon='clip']").click()
-    attach = driver.find_element_by_css_selector("input[type='file']")
-    attach.send_keys(midia)
-    time.sleep(3)
-    send = driver.find_element_by_css_selector("span[data-icon='send']")
-    send.click()  
-
 primax_clients = []
 
-i = 0
+# começa a partir desse Id
+i = 5728
 n = 0
 
 all_ids = int(request_number_all_clients()) + 1000
@@ -110,52 +104,59 @@ def format_clients_primax_cellphone(primax_list):
         if i != []:
             first_support  = i[2].replace('(','')
             second_support  = first_support.replace(')', '')
+            third_support = second_support.replace('-','')
 
-            i[2] = '55'+second_support
+            i[2] = '55'+third_support
 
     return primax_list
 
-browser = webdriver.Chrome()
+browser = webdriver.Chrome(executable_path="bot-primax-whatsapp\chromedriver.exe")
 
 dir_path = os.getcwd()
 
-midia = dir_path + '/bots-python/imagem/imagem.jpeg'
+midia = dir_path + '/bot-primax-whatsapp/imagem/imagem.jpeg'
 
 new_primax_list = format_clients_primax_cellphone(primax_clients)
 
+print(new_primax_list)
+
 for i in new_primax_list:
+    if i != []:
+        cellphone = i[2]
+        name = i[0]
+        lastName = i[1]
 
-    firstName = i[0].title()
-    cellphone = i[2]
+        print(cellphone)
 
-    link = f'https://web.whatsapp.com/send?phone={cellphone}'
+        link = f'https://web.whatsapp.com/send?phone={cellphone}'
 
-    browser.get(link)
+        browser.get(link)
 
-    while len(browser.find_elements_by_id('side')) < 1:
-        time.sleep(20)
+        while len(browser.find_elements_by_id('side')) < 1:
+            time.sleep(20)
 
-    try:
-        if(browser.find_element_by_xpath('//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/div') != None):
-            print(i)
-            print('número de celular está inválido')
-            time.sleep(40)
-    except:
         try:
-            print(i)
-            browser.find_element_by_css_selector("span[data-icon='clip']").click()
-            time.sleep(5)
-            attach = browser.find_element_by_css_selector("input[type='file']")
-            
-            attach.send_keys(midia)
-            time.sleep(3)
+            if(browser.find_element_by_xpath('//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[2]/div/div') != None):
+                print(f'número de celular está inválido {cellphone}')
+                time.sleep(40)
+        except:
+            try:
+                
+                browser.find_element_by_css_selector("span[data-icon='clip']").click()
+                time.sleep(5)
+                attach = browser.find_element_by_css_selector("input[type='file']")
+                
+                attach.send_keys(midia)
+                time.sleep(3)
 
-            send = browser.find_element_by_xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span")
-            send.click()
+                send = browser.find_element_by_xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[2]/div[2]/div/div/span")
+                send.click()
 
-            time.sleep(40)
-        except Exception as e:
-            print("Erro ao enviar media", e)
+                print(f'imagem enviado para {cellphone} aluno: {name,lastName}')
+
+                time.sleep(40)
+            except Exception as e:
+                print("Erro ao enviar media", e)
 
 
 print('=============================================')
